@@ -1,9 +1,15 @@
 package com.center.shiksha.model;
 
+import java.util.List;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Section {
@@ -11,8 +17,10 @@ public class Section {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private int standardId;
 	private String name;
+	
+	@ManyToMany(mappedBy = "sections")
+	private List<Standard> standards;
 	
 	public int getId() {
 		return id;
@@ -21,12 +29,6 @@ public class Section {
 		this.id = id;
 	}
 	
-	public int getStandardId() {
-		return standardId;
-	}
-	public void setStandardId(int standardId) {
-		this.standardId = standardId;
-	}
 	public String getName() {
 		return name;
 	}

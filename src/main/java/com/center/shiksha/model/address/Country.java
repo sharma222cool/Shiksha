@@ -13,6 +13,7 @@ public class Country {
 	private int id;
 	private String name;
 	private String code;
+	
 	public int getId() {
 		return id;
 	}
@@ -31,4 +32,10 @@ public class Country {
 	public void setCode(String code) {
 		this.code = code;
 	}
+	@Override
+	public String toString() {
+		return "Country [id=" + id + ", name=" + name + ", code=" + code + "]";
+	}
+	
+	
 }

@@ -1,9 +1,12 @@
 package com.center.shiksha.model.address;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class City {
@@ -11,10 +14,13 @@ public class City {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private int stateId;
 	private String name;
 	private long latitude;
 	private long longitude;
+	
+	@ManyToOne
+	@JoinColumn(name = "state_id",referencedColumnName = "id")
+	private State state;
 	
 	public int getId() {
 		return id;
@@ -23,11 +29,11 @@ public class City {
 		this.id = id;
 	}
 	
-	public int getStateId() {
-		return stateId;
+	public State getState() {
+		return state;
 	}
-	public void setStateId(int stateId) {
-		this.stateId = stateId;
+	public void setState(State state) {
+		this.state = state;
 	}
 	public String getName() {
 		return name;
@@ -47,4 +53,6 @@ public class City {
 	public void setLongitude(long longitude) {
 		this.longitude = longitude;
 	}
+	
+	
 }
