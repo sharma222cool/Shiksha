@@ -7,10 +7,10 @@ public class AddressDTO {
 	private int id;
 	private String street1;
 	private String street2;
-	private int pincode;
+	private long pincode;
 	private CityDTO city;
 	private StateDTO state;
-	
+	private String country;
 	
 	public int getId() {
 		return id;
@@ -30,10 +30,11 @@ public class AddressDTO {
 	public void setStreet2(String street2) {
 		this.street2 = street2;
 	}
-	public int getPincode() {
+	
+	public long getPincode() {
 		return pincode;
 	}
-	public void setPincode(int pincode) {
+	public void setPincode(long pincode) {
 		this.pincode = pincode;
 	}
 	public CityDTO getCity() {
@@ -48,5 +49,10 @@ public class AddressDTO {
 	public void setState(StateDTO state) {
 		this.state = state;
 	}
-	
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
 }

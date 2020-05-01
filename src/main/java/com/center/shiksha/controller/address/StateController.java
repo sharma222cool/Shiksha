@@ -1,4 +1,4 @@
-package com.center.shiksha.controller;
+package com.center.shiksha.controller.address;
 
 import java.util.List;
 
@@ -10,29 +10,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.center.shiksha.model.School;
-import com.center.shiksha.model.address.City;
 import com.center.shiksha.model.address.State;
 import com.center.shiksha.repository.SchoolRepository;
-import com.center.shiksha.repository.address.CityRepository;
 import com.center.shiksha.repository.address.StateRepository;
 
 @RestController
-public class CityController {
+public class StateController {
 	
 	@Autowired
-	private CityRepository cityRepository;
+	private StateRepository stateRepository;
 
-	@PostMapping("/cities")
-	public List<City> saveCity(@RequestBody City city)
+	@PostMapping("/states")
+	public List<State> saveSchool(@RequestBody State state)
 	{
-		cityRepository.save(city);
+		stateRepository.save(state);
 		
-		return cityRepository.findAll();
+		return stateRepository.findAll();
 	}
 	
-	@GetMapping("/cities")
-	public List<City> saveSchool()
+	@GetMapping("/states")
+	public List<State> saveSchool()
 	{
-		return cityRepository.findAll();
+		return stateRepository.findAll();
 	}
 }

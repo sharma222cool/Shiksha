@@ -3,11 +3,8 @@ package com.center.shiksha.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,14 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.center.shiksha.dto.SchoolDTO;
 import com.center.shiksha.dto.SectionDTO;
 import com.center.shiksha.dto.StandardDTO;
-import com.center.shiksha.dto.address.AddressDTO;
+import com.center.shiksha.mapper.SectionMapper;
+import com.center.shiksha.mapper.StandardMapper;
+import com.center.shiksha.mapper.address.AddressMapper;
 import com.center.shiksha.model.School;
 import com.center.shiksha.model.SchoolStandardSection;
 import com.center.shiksha.model.Section;
 import com.center.shiksha.model.Standard;
-import com.center.shiksha.model.address.Address;
-import com.center.shiksha.model.address.City;
-import com.center.shiksha.repository.SchoolRepository;
 import com.center.shiksha.repository.SchoolStandardSectionRepository;
 
 @RestController
@@ -31,9 +27,15 @@ public class SchoolController {
 	
 	@Autowired
 	private SchoolStandardSectionRepository schoolStandardSectionRepository;
+	@Autowired
+	SectionMapper sectionMapper;
+	@Autowired
+	StandardMapper standardMapper;
+	@Autowired
+	AddressMapper addressMapper;
 
 	@PostMapping("/schools")
-	public List<SchoolDTO> saveSchool(@RequestBody SchoolDTO schoolDTO)
+	public List<SchoolStandardSection> saveSchool(@RequestBody SchoolDTO schoolDTO)
 
 	{
 		List<SchoolStandardSection> schoolSectionStandardList = new ArrayList<>();
@@ -42,17 +44,7 @@ public class SchoolController {
 		school.setName(schoolDTO.getName());
 		school.setCode(schoolDTO.getCode());
 		
-		Address address = new Address();
-		AddressDTO addressDTO = schoolDTO.getAddress();
-		address.setStreet1(addressDTO.getStreet1());
-		address.setStreet2(addressDTO.getStreet2());
-		address.setPincode(addressDTO.getPincode());
-		
-		City city = new City();
-		city.setId(addressDTO.getCity().getId());
-		address.setCity(city);
-		
-		school.setAddress(address);
+		school.setAddress(addressMapper.mapAddressDTOToAddress(schoolDTO.getAddress()));
 		
 		List<StandardDTO> standards = schoolDTO.getStandards();
 		for(StandardDTO standardDTO : standards)
@@ -77,7 +69,7 @@ public class SchoolController {
 		
 		schoolStandardSectionRepository.saveAll(schoolSectionStandardList);
 		
-		return getSchools();
+		return schoolStandardSectionRepository.findAll();
 	}
 	
 	@GetMapping("/schools")
@@ -97,8 +89,7 @@ public class SchoolController {
 			
 			if(schoolDTOList.contains(schoolDTO))
 			{
-				SchoolDTO existingSchoolDTO = schoolDTOList.get(schoolDTOList.indexOf(schoolDTO));
-				configureExistingSchool(schoolDTOList, standard, section, existingSchoolDTO);
+				configureExistingSchool(schoolDTOList, standard, section, schoolDTO);
 			}else {
 				configureNewSchool(schoolDTOList, school, standard, section, schoolDTO);
 			}
@@ -112,8 +103,10 @@ public class SchoolController {
 		schoolDTO.setName(school.getName());
 		schoolDTO.setCode(school.getCode());
 		
-		StandardDTO standardDTO = getStandardDTO(standard);
-		SectionDTO sectionDTO = getSectionDTO(section);
+		schoolDTO.setAddress(addressMapper.mapAddressToAddressDTO(school.getAddress()));
+		
+		StandardDTO standardDTO = standardMapper.mapStandardToStandardDTO(standard);
+		SectionDTO sectionDTO = sectionMapper.mapSectionToSectionDTO(section);
 		
 		standardDTO.setSections(Arrays.asList(sectionDTO));
 		
@@ -124,56 +117,48 @@ public class SchoolController {
 
 	private void configureExistingSchool(List<SchoolDTO> schoolDTOList, Standard standard, Section section,
 			SchoolDTO schoolDTO) {
+		
+		SchoolDTO existingSchoolDTO = schoolDTOList.get(schoolDTOList.indexOf(schoolDTO));
 		StandardDTO standarDTO = new StandardDTO();
 		standarDTO.setId(standard.getId());
 		
-		List<StandardDTO> existingStandards = schoolDTO.getStandards();
-		System.out.println("school_id : "+schoolDTO.getName()+" standardDTO id :"+standarDTO.getId()+" existing standards :"+existingStandards);
+		List<StandardDTO> existingStandards = existingSchoolDTO.getStandards();
+	
 		if(existingStandards.contains(standarDTO))
 		{
-			
-			StandardDTO existingStandarDTO = existingStandards.get(existingStandards.indexOf(standarDTO));
-			SectionDTO sectionDTO = getSectionDTO(section);
-			
-			List<SectionDTO> sections = new ArrayList<SectionDTO>();
-			sections.addAll(existingStandarDTO.getSections());
-			sections.add(sectionDTO);
-			
-			existingStandarDTO.setSections(sections);
-			
-			schoolDTOList.get(schoolDTOList.indexOf(schoolDTO)).setStandards(existingStandards);
-			
+			configureExistingStandard(schoolDTOList, section, existingSchoolDTO, standarDTO, existingStandards);
 		}else {
-			
-			StandardDTO standardDTO = getStandardDTO(standard);
-			SectionDTO sectionDTO = getSectionDTO(section);
-			
-			standardDTO.setSections(Arrays.asList(sectionDTO));
-			
-			List<StandardDTO> standards = new ArrayList<StandardDTO>();
-			standards.addAll(existingStandards);
-			standards.add(standardDTO);
-			
-			schoolDTO.setStandards(existingStandards);
-			
-			schoolDTOList.get(schoolDTOList.indexOf(schoolDTO)).setStandards(standards);
-			
+			configureNewStandard(schoolDTOList, standard, section, existingSchoolDTO, existingStandards);
 		}
 	}
 
-	private SectionDTO getSectionDTO(Section section) {
-		SectionDTO sectionDTO = new SectionDTO();
-		sectionDTO.setId(section.getId());
-		sectionDTO.setName(section.getName());
-		return sectionDTO;
+	private void configureExistingStandard(List<SchoolDTO> schoolDTOList, Section section, SchoolDTO existingSchoolDTO,
+			StandardDTO standarDTO, List<StandardDTO> existingStandards) {
+		StandardDTO existingStandarDTO = existingStandards.get(existingStandards.indexOf(standarDTO));
+		SectionDTO sectionDTO = sectionMapper.mapSectionToSectionDTO(section);
+		
+		List<SectionDTO> sections = new ArrayList<SectionDTO>();
+		sections.addAll(existingStandarDTO.getSections());
+		sections.add(sectionDTO);
+		
+		existingStandarDTO.setSections(sections);
+		
+		schoolDTOList.get(schoolDTOList.indexOf(existingSchoolDTO)).setStandards(existingStandards);
 	}
 
-	private StandardDTO getStandardDTO(Standard standard) {
-		StandardDTO standardDTO = new StandardDTO();
-		standardDTO.setId(standard.getId());
-		standardDTO.setName(standard.getName());
-		standardDTO.setCode(standard.getCode());
-		return standardDTO;
+	private void configureNewStandard(List<SchoolDTO> schoolDTOList, Standard standard, Section section,
+			SchoolDTO existingSchoolDTO, List<StandardDTO> existingStandards) {
+		StandardDTO standardDTO = standardMapper.mapStandardToStandardDTO(standard);
+		SectionDTO sectionDTO = sectionMapper.mapSectionToSectionDTO(section);
+		
+		standardDTO.setSections(Arrays.asList(sectionDTO));
+		
+		List<StandardDTO> standards = new ArrayList<StandardDTO>();
+		standards.addAll(existingStandards);
+		standards.add(standardDTO);
+		
+		existingSchoolDTO.setStandards(existingStandards);
+		
+		schoolDTOList.get(schoolDTOList.indexOf(existingSchoolDTO)).setStandards(standards);
 	}
-
 }
