@@ -1,6 +1,7 @@
 package com.center.shiksha.controller;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.center.shiksha.model.Standard;
-import com.center.shiksha.dto.SchoolStandardSectionJoin;
 import com.center.shiksha.model.School;
 import com.center.shiksha.model.Section;
 import com.center.shiksha.model.student.Student;
@@ -58,8 +58,8 @@ public class StudentController {
 		Workbook workbook = new XSSFWorkbook(inputStream);
 		
 		long count = repository.getCount(studentExcel.getSchoolId(), studentExcel.getStandardId(), studentExcel.getSectionId());
-		SchoolStandardSectionJoin result = repository.getSchoolStandardSection(studentExcel.getSectionId(), studentExcel.getStandardId(), studentExcel.getSchoolId());
-		System.out.println(result);
+//		SchoolStandardSectionJoin result = repository.getSchoolStandardSection(studentExcel.getSectionId(), studentExcel.getStandardId(), studentExcel.getSchoolId());
+//		System.out.println(result);
 //		School school = schoolRepository.findById(studentExcel.getSchoolId()).orElse(null);
 //		Standard standard = standardRepository.findById(studentExcel.getStandardId()).orElse(null);
 //		Section section = sectionRepository.findById(studentExcel.getSectionId()).orElse(null);

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Section {
@@ -18,10 +19,7 @@ public class Section {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String name;
-	
-	@ManyToMany(mappedBy = "sections")
-	private List<Standard> standards;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -35,4 +33,7 @@ public class Section {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@OneToMany(mappedBy = "section")
+	private List<SchoolStandardSection> studentStandardSectionMapping;
 }

@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -24,14 +25,8 @@ public class Standard {
 	private String name;
 	private String code;
 	
-	@ManyToMany
-	@JoinTable(name = "standard_section", 
-			  joinColumns = {@JoinColumn(name = "standard_id", referencedColumnName = "id")}, 
-			  inverseJoinColumns = {@JoinColumn(name = "section_id", referencedColumnName = "id")})
-	private List<Section> sections;
-	
-	@ManyToMany(mappedBy = "standards")
-	private List<School> schools;
+	@OneToMany(mappedBy = "standard")
+	private List<SchoolStandardSection> studentStandardSectionMapping;
 	
 	public int getId() {
 		return id;
@@ -51,11 +46,5 @@ public class Standard {
 	}
 	public void setCode(String code) {
 		this.code = code;
-	}
-	public List<Section> getSections() {
-		return sections;
-	}
-	public void setSections(List<Section> sections) {
-		this.sections = sections;
 	}
 }

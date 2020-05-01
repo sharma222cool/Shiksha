@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -28,11 +30,8 @@ public class School {
 	@JoinColumn(name="address_id")
 	private Address address;
 	
-	@ManyToMany
-	@JoinTable(name = "school_standard", 
-			  joinColumns = {@JoinColumn(name = "school_id", referencedColumnName = "id")}, 
-			  inverseJoinColumns = {@JoinColumn(name = "standard_id", referencedColumnName = "id")})
-	private List<Standard> standards;
+	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL)
+	private List<SchoolStandardSection> studentStandardSectionMapping;
 	
 	public int getId() {
 		return id;
@@ -46,6 +45,7 @@ public class School {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
+	
 	public String getName() {
 		return name;
 	}
@@ -59,13 +59,6 @@ public class School {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	public List<Standard> getStandards() {
-		return standards;
-	}
-	public void setStandards(List<Standard> standards) {
-		this.standards = standards;
-	}	
-	
 	@Override
 	public String toString() {
 		return "School [id=" + id + ", name=" + name + ", code=" + code + ", address=" + address + "]";
