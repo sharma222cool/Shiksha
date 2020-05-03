@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import com.center.shiksha.repository.address.AddressRepository;
 import com.center.shiksha.repository.address.CityRepository;
 import com.center.shiksha.repository.address.StateRepository;
 
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
 public class StandardController {
 	
@@ -27,11 +29,10 @@ public class StandardController {
 	private StandardRepository standardRepository;
 
 	@PostMapping("/standards")
-	public List<Standard> saveStandard(@RequestBody Standard standard)
+	public List<Standard> saveStandard(@RequestBody List<Standard> standards)
 	{
-		System.out.println(standard);
-		standardRepository.save(standard);
-		
+		System.out.println("list standard"+standards);
+		standardRepository.saveAll(standards);
 		return standardRepository.findAll();
 	}
 	

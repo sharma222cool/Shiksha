@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import com.center.shiksha.model.Section;
 import com.center.shiksha.model.Standard;
 import com.center.shiksha.repository.SchoolStandardSectionRepository;
 
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
 public class SchoolController {
 	
